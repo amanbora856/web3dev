@@ -1,0 +1,58 @@
+// SPDX-License-Identifier: GPL-3.0
+pragma solidity >=0.7.0 <0.9.0;
+
+contract NDCoinERC20 {
+
+    
+    uint public constant duration = 1 minutes;//duration for which tokens will be locked
+    uint public immutable end;//end timestamp for the block
+    
+
+    string public constant name = "ND Coin";//name of coin
+    string public constant symbol = "NDN";//symbol of coin
+    uint8 public constant decimals = 18;//decimals for coin
+    address public receiver=0x09F59a58169B42e426a6398b167128F4AD4cC0dF;//adddress to where coin has to be transferred
+
+    mapping(address=>uint)public balances;
+
+    uint256 totalSupply_;//total supply of the smart contract
+    uint256 supply_tosend;//supply to send to the given address
+
+    constructor(uint256 total) {
+      end = block.timestamp + duration;//calculation of endtime stamp
+      totalSupply_ = total;
+      supply_tosend=(total*10)/100;//calulating 10 percent
+      supply_tosend=supply_tosend;
+
+      balances[msg.sender] = totalSupply_;
+      
+    }
+
+    function totalSupply() public view returns (uint256) {//function stating the total supply
+      return totalSupply_;
+    }
+
+    function balanceOf(address tokenOwner) public view returns (uint) {
+        return balances[tokenOwner];
+    }
+
+    
+    function transfer() public returns (bool) {
+        require(supply_tosend <= balances[msg.sender]);
+        
+        if(block.timestamp >= end)//checking whether 1 minute passed or not
+        {
+        
+    
+        balances[msg.sender] -= supply_tosend;//
+        balances[receiver] += supply_tosend;
+        
+        
+        }
+     
+        
+        return true;
+    }
+
+    
+}
